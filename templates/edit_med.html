@@ -1,0 +1,50 @@
+{% extends 'layout.html' %}
+{% block content %}
+  <h1>{{ 'ویرایش دارو' if med else 'افزودن دارو' }}</h1>
+  <form method="post">
+    <div class="form-row">
+      <label>نام</label>
+      <input type="text" name="name" required value="{{ med.name if med else '' }}" />
+    </div>
+
+    <div class="form-row">
+      <label>دوز</label>
+      <input type="text" name="dosage" value="{{ med.dosage if med else '' }}" />
+    </div>
+
+    <div class="form-row">
+      <label>یادداشت</label>
+      <textarea name="notes" rows="3">{{ med.notes if med else '' }}</textarea>
+    </div>
+
+    <div class="form-row">
+      <label>تکرار</label>
+      <select name="frequency">
+        <option value="daily" {% if med and med.frequency == 'daily' %}selected{% endif %}>روزانه</option>
+        <option value="every_other_day" {% if med and med.frequency == 'every_other_day' %}selected{% endif %}>یک روز در میان</option>
+      </select>
+    </div>
+
+    <div class="form-row">
+      <label>تاریخ شروع</label>
+      <input type="date" name="start_date" value="{{ med.start_date if med else today }}" />
+    </div>
+
+    <fieldset class="form-row">
+      <legend>بازه‌های مصرف</legend>
+      <div class="checkbox-grid">
+        {% for s in slots %}
+          <label class="checkbox">
+            <input type="checkbox" name="slots" value="{{ s.id }}" {% if med and (s.id in med.slots) %}checked{% endif %} />
+            <span>{{ s.label }}</span>
+          </label>
+        {% endfor %}
+      </div>
+    </fieldset>
+
+    <div class="form-actions">
+      <button class="btn primary" type="submit">ذخیره</button>
+      <a class="btn" href="{{ url_for('meds_list') }}">انصراف</a>
+    </div>
+  </form>
+{% endblock %}

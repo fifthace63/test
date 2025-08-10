@@ -1,0 +1,43 @@
+{% extends 'layout.html' %}
+{% block content %}
+  <h1>برنامه امروز ({{ today }})</h1>
+  <div class="grid">
+    {% for group in schedule %}
+      <section class="card">
+        <h2 class="card-title">{{ group.slot.label }}</h2>
+        {% if group.items %}
+          <ul class="list">
+            {% for item in group.items %}
+              <li class="list-item">
+                <div class="list-main">
+                  <div class="med-name">{{ item.med.name }}</div>
+                  {% if item.med.dosage %}<div class="med-dosage">{{ item.med.dosage }}</div>{% endif %}
+                  {% if item.med.notes %}<div class="med-notes">{{ item.med.notes }}</div>{% endif %}
+                  <div class="med-frequency">تکرار: {{ 'روزانه' if item.med.frequency == 'daily' else 'یک روز در میان' }}</div>
+                </div>
+                <div class="list-actions">
+                  {% if item.taken %}
+                    <span class="taken-time">مصرف شده در {{ item.taken.taken_at }}</span>
+                    <form method="post" action="{{ url_for('undo_intake') }}">
+                      <input type="hidden" name="med_id" value="{{ item.med.id }}" />
+                      <input type="hidden" name="slot_id" value="{{ group.slot.id }}" />
+                      <button class="btn secondary" type="submit">برگشت</button>
+                    </form>
+                  {% else %}
+                    <form method="post" action="{{ url_for('record_intake') }}">
+                      <input type="hidden" name="med_id" value="{{ item.med.id }}" />
+                      <input type="hidden" name="slot_id" value="{{ group.slot.id }}" />
+                      <button class="btn primary" type="submit">مصرف شد</button>
+                    </form>
+                  {% endif %}
+                </div>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="muted">موردی برای این بازه وجود ندارد.</p>
+        {% endif %}
+      </section>
+    {% endfor %}
+  </div>
+{% endblock %}
