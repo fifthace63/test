@@ -1,0 +1,47 @@
+{% extends 'layout.html' %}
+{% block content %}
+  <div class="header-row">
+    <h1>داروها</h1>
+    <a class="btn primary" href="{{ url_for('new_med_form') }}">افزودن دارو</a>
+  </div>
+
+  {% if meds %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th>نام</th>
+          <th>دوز</th>
+          <th>بازه‌ها</th>
+          <th>تکرار</th>
+          <th>شروع</th>
+          <th>عملیات</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for m in meds %}
+          <tr>
+            <td>{{ m.name }}</td>
+            <td>{{ m.dosage }}</td>
+            <td>
+              {% for s in slots %}
+                {% if s.id in m.slots %}
+                  <span class="tag">{{ s.label }}</span>
+                {% endif %}
+              {% endfor %}
+            </td>
+            <td>{{ 'روزانه' if m.frequency == 'daily' else 'یک روز در میان' }}</td>
+            <td>{{ m.start_date }}</td>
+            <td class="actions">
+              <a class="btn small" href="{{ url_for('edit_med_form', med_id=m.id) }}">ویرایش</a>
+              <form method="post" action="{{ url_for('delete_med', med_id=m.id) }}" onsubmit="return confirm('حذف شود؟');">
+                <button class="btn danger small" type="submit">حذف</button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="muted">هنوز دارویی ثبت نشده است.</p>
+  {% endif %}
+{% endblock %}
